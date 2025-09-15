@@ -186,6 +186,7 @@ def main():
     out_overall_profile = profile.copy()
     out_overall_profile.update({'dtype':'uint8', 'compress':'LZW', 'driver':'GTiff', 'BIGTIFF':'YES', 'tiled':True, 
                                 'blockxsize':img_pixels_detection, 'blockysize':img_pixels_detection})
+    out_overall_profile.pop('photometric', None) 
     out_overall_profile['count'] = [1 if output_type == 'argmax' else n_classes][0]
     out = rasterio.open(path_out, 'w+', **out_overall_profile)   
     
