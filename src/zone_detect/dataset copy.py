@@ -1,12 +1,11 @@
-import os
 import numpy as np
-import torch
-import rasterio
+import torch 
 import rasterio.windows
 
 from torch.utils.data import Dataset
 from skimage.util import img_as_float
 from rasterio.enums import Resampling
+
 
 
 def convert(img, img_type):
@@ -21,54 +20,39 @@ def convert(img, img_type):
         return np.expand_dims(img.astype(np.uint8), axis=0)
     else:
         print("The output type has not been interpreted.")
-        return img
+        return img 
 
 
 class Sliced_Dataset(Dataset):
-
-    def __init__(self,
+    
+    def __init__(self, 
                  dataframe,
                  img_path,
                  resolution,
                  bands,
                  patch_detection_size,
                  norma_dict
-                 ):
-
+                ):
+        
+        
         self.dataframe = dataframe
         self.img_path = img_path
         self.resolution = resolution
         self.bands = bands
         self.height, self.width = patch_detection_size, patch_detection_size
         self.norma_dict = norma_dict[0]
-
-        # Defer opening to worker processes
-        self.big_image = None
-        self._pid = None  # track which process owns the handle
-
+        
+        self.big_image = rasterio.open(self.img_path)   
+        
     def __len__(self):
-        return len(self.dataframe)
+        return len(self.dataframe)  
 
-    def _ensure_reader(self):
-        """
-        Open the raster in the current process if not already open,
-        or if we've been forked/spawned into a new PID.
-        """
-        if self.big_image is not None and self._pid == os.getpid() and not self.big_image.closed:
-            return
-        # (Re)open in this process
-        if self.big_image is not None and not self.big_image.closed:
-            try:
-                self.big_image.close()
-            except Exception:
-                pass
-        self.big_image = rasterio.open(self.img_path)
-        self._pid = os.getpid()
 
     def close_raster(self):
         if self.big_image and not self.big_image.closed:
-            self.big_image.close()
-
+            self.big_image.close()  
+            
+            
     def normalization(self, in_img: np.ndarray, norm_type: str, means: list, stds: list):
         if norm_type == 'custom':
             if len(means) != len(stds):
@@ -85,33 +69,25 @@ class Sliced_Dataset(Dataset):
             print("Normalization argument should be 'scaling' or 'custom'. Going with scaling.")
             in_img = img_as_float(in_img)
 
-        return in_img
+        return in_img        
+
 
     def __getitem__(self, index):
-        try:
-            # Make sure the raster handle exists in this worker
-            self._ensure_reader()
-
+        try: 
             bounds = self.dataframe.at[index, 'geometry'].bounds
             src = self.big_image
 
             window = rasterio.windows.from_bounds(bounds[0], bounds[1], bounds[2], bounds[3], src.meta["transform"])
-            patch_img = src.read(indexes=self.bands,
-                                 window=window,
-                                 out_shape=(len(self.bands), self.height, self.width),
-                                 resampling=Resampling.bilinear,
-                                 boundless=True,
-                                 )
+            patch_img = src.read(indexes=self.bands, window=window, out_shape=(len(self.bands), self.height, self.width),
+                           resampling=Resampling.bilinear, boundless=True,
+                         )
 
-            patch_img = self.normalization(patch_img,
-                                           self.norma_dict['norm_type'],
-                                           self.norma_dict['norm_means'],
-                                           self.norma_dict['norm_stds'])
+            patch_img = self.normalization(patch_img, self.norma_dict['norm_type'], self.norma_dict['norm_means'], self.norma_dict['norm_stds'])
 
             return {
                 "image": torch.as_tensor(patch_img, dtype=torch.float),
                 "index": torch.from_numpy(np.asarray([index])).int()
-            }
-
+            }            
+                     
         except rasterio._err.CPLE_BaseError as error:
-            print(f"CPLE error {error}")
+            print(f"CPLE error {error}")    
