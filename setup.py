@@ -47,7 +47,8 @@ setup(
     entry_points={
         'console_scripts': [
             'flair-detect=src.zone_detect.main:main',
-            'flair=src.flair.main:main'
+            'flair=src.flair.main:main',
+            'flair-vect=src.flair_aiml4os_vector_conv.flair_to_cosia_vector:main'
         ]
     }
 )
