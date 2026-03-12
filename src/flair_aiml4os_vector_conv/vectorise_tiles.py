@@ -1,14 +1,15 @@
 import os
 import glob
+from pathlib import Path
 
 # Wenn Permission denied Fehlermeldung im Terminal
 #chmod +x flair_vectorise.sh
 
+# Pfad zum Hauptverzeichnis
+dir_input = "/mnt/eo/projekt/2023_Essnet/results/Raster_tiled_2/result0_pyramiden/"
+dir_output = '/mnt/eo/projekt/2023_Essnet/results/Vektor/'
 
-dir_input = "/mnt/eo/projekt/2023_Essnet/results/Raster_tiled/"
-
-
-def update_yaml(tagname):
+def update_yaml(filename):
     def update_yaml_text(key, new_value, file_yaml_input, file_yaml_output):
         # Ensure string values are quoted
         if isinstance(new_value, str) and not (new_value.startswith('"') or new_value.startswith("'")):
@@ -28,47 +29,61 @@ def update_yaml(tagname):
         with open(file_yaml_output, "w", encoding="utf-8") as f:
             f.writelines(lines_out)
 
-    filename = tagname.split('/')
+    
+    #yamlfile = "/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/configs_vector/" + filename + ".yaml"
+    yamlfile = '/mnt/eo/projekt/2023_Essnet/results/yamlfiles/' + filename + '.yaml'
+   
+
+
+    # Paths for yaml and input/output tif
+    
+    yamlfile
+   
+    filename = filename.split('/')
     filename = filename[-1]
     
-    yamlfile = "/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/configs_vector/" + filename + ".yaml"
    
-    inputfile = tagname + '.tif'
-   
-    filename = tagname.split('/')
-    filename = filename[-1]
-    print(filename)
-   
-    inputfile = tagname + '.tif'
+
+    inputfile = filename + '.tif'
 
     outputname = '/home/nnors/Vektor/' + filename + '.gpkg'
 
-    # Update specific fields
-    print("yaml out: " + yamlfile)
+    p = Path(__file__).with_name('config-vector_proto.yaml')
+    file_yaml_input = p.absolute()
+
+   
     update_yaml_text(key = "input_file", new_value = inputfile, 
-                     file_yaml_input = "config-vector_proto.yaml", file_yaml_output = yamlfile)
+                     file_yaml_input = file_yaml_input, file_yaml_output = yamlfile)
     
-    update_yaml_text(key = "output_file", new_value=outputname, file_yaml_input=yamlfile, 
+    update_yaml_text(key = "output_file", new_value=outputname, file_yaml_input=file_yaml_input, 
                      file_yaml_output= yamlfile)
+
+
+def list_tif_files(directory):
+    return glob.glob(os.path.join(dir_input, "**", "*.tif"), recursive=True)
+
+
+list_input = list_tif_files(dir_input)
+
+
+for input in list_input:
     
-    def list_tif_files(directory):
-        return glob.glob(os.path.join(dir_input, "**", "*.tif"), recursive=True)
+    input_filepath = input.replace(".tif","")
+
+    yamlfile_name = input_filepath.split('/')
+    yamlfile_name = yamlfile_name[-1]
+
+
+    yamlfile = '/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/configs_vector/' + yamlfile_name + '.yaml'
+    print(yamlfile_name)
+
+    update_yaml(input_filepath)
     
-    list_input = list_tif_files(dir_input)
+    # Leerzeichen ist wichtig
+    
+    #osCommand="/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/src/flair_aiml4os_vector_conv/flair_vectorise.sh " + yamlfile
+    #print(osCommand)
 
-
-    for input in list_input:
-        input_filepath = input.replace(".tif","")
-
-        yamlfile_name = input_filepath.split('/')
-        yamlfile_name = yamlfile_name[-1]
-
-        yamlfile="/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/configs_vector/" +yamlfile_name + '.yaml'
-
-        # Leerzeichen ist wichtig!!!!
-        osCommand="/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/src/flair_aiml4os_vector_conv/flair_vectorise.sh " + yamlfile
-        print(osCommand)
-
-        if os.system(osCommand)!=0:
-            print("error")
-            exit(1)
+   # if os.system(osCommand)!=0:
+   #     print("error")
+   #     exit(1)
