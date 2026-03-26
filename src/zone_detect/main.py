@@ -43,6 +43,12 @@ def read_config(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
 
+def _format_hms(td: datetime.timedelta) -> str:
+    total_seconds = int(td.total_seconds())
+    h = total_seconds // 3600
+    m = (total_seconds % 3600) // 60
+    s = total_seconds % 60
+    return f"{h:02d}:{m:02d}:{s:02d}"
 
 
 def setup(args):
@@ -149,6 +155,9 @@ def prepare(config, device):
 
 def main():
 
+    start_dt = datetime.datetime.now()
+    print(f"    [STARTING TIME] {start_dt.strftime('%Y-%m-%d %H:%M:%S')}")
+    
     # reading yaml
     args = argParser.parse_args()
     config, path_out, device, use_gpu = setup(args)
@@ -188,6 +197,7 @@ def main():
                                 'blockxsize':img_pixels_detection, 'blockysize':img_pixels_detection})
     out_overall_profile.pop('photometric', None) 
     out_overall_profile['count'] = [1 if output_type == 'argmax' else n_classes][0]
+    out_overall_profile.pop('photometric', None)
     out = rasterio.open(path_out, 'w+', **out_overall_profile)   
     
     # get Dataloader
@@ -233,6 +243,11 @@ def main():
                         
     [X] done writing to {path_out.split('/')[-1]} raster file.\n""")
 
+    end_dt = datetime.datetime.now()
+    total = end_dt - start_dt
+    print(f"    [ENDING TIME]   {end_dt.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"    [TOTAL PROCESSING TIME] { _format_hms(total) }")
+    
     sys.stdout = sys.__stdout__ 
 
 if __name__ == '__main__':
@@ -243,3 +258,6 @@ if __name__ == '__main__':
 
 
     
+
+
+
