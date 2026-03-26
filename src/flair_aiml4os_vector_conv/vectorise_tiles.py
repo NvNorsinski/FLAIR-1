@@ -2,13 +2,9 @@ import os
 import glob
 from pathlib import Path
 
-# Wenn Permission denied Fehlermeldung im Terminal
-#chmod +x flair_vectorise.sh
-
 # Pfad zum Hauptverzeichnis
 dir_input = "/mnt/eo/projekt/2023_Essnet/results/Raster_tiled/"
-dir_output = '/mnt/eo/projekt/2023_Essnet/results/Vektor/'
-outputpathfile = f'/home/nnors/Vektor/'{filename}'.gpkg'
+outputpathfile = '/home/nnors/Vektor/'
 
 def update_yaml(filename):
     def update_yaml_text(key, new_value, file_yaml_input, file_yaml_output):
@@ -31,7 +27,6 @@ def update_yaml(filename):
             f.writelines(lines_out)
 
     yamlfile = '/mnt/eo/projekt/2023_Essnet/results/yamlfiles/' + filename + '.yaml'
-   
     # Paths for yaml and input/output tif
     
     yamlfile
@@ -77,10 +72,9 @@ for input in list_input:
     update_yaml(input_filepath)
     
     # Leerzeichen ist wichtig
-    
-    #osCommand="/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/src/flair_aiml4os_vector_conv/flair_vectorise.sh " + yamlfile
-    #print(osCommand)
+    osCommand="/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/src/flair_aiml4os_vector_conv/flair_vectorise.sh " + yamlfile
+    print(osCommand)
 
-   # if os.system(osCommand)!=0:
-   #     print("error")
-   #     exit(1)
+    if os.system(osCommand)!=0:
+        print("error")
+        exit(1)
