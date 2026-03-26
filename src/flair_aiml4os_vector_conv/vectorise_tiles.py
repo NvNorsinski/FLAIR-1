@@ -6,8 +6,9 @@ from pathlib import Path
 #chmod +x flair_vectorise.sh
 
 # Pfad zum Hauptverzeichnis
-dir_input = "/mnt/eo/projekt/2023_Essnet/results/Raster_tiled_2/result0_pyramiden/"
+dir_input = "/mnt/eo/projekt/2023_Essnet/results/Raster_tiled/"
 dir_output = '/mnt/eo/projekt/2023_Essnet/results/Vektor/'
+outputpathfile = f'/home/nnors/Vektor/'{filename}'.gpkg'
 
 def update_yaml(filename):
     def update_yaml_text(key, new_value, file_yaml_input, file_yaml_output):
@@ -29,12 +30,8 @@ def update_yaml(filename):
         with open(file_yaml_output, "w", encoding="utf-8") as f:
             f.writelines(lines_out)
 
-    
-    #yamlfile = "/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/configs_vector/" + filename + ".yaml"
     yamlfile = '/mnt/eo/projekt/2023_Essnet/results/yamlfiles/' + filename + '.yaml'
    
-
-
     # Paths for yaml and input/output tif
     
     yamlfile
@@ -46,7 +43,7 @@ def update_yaml(filename):
 
     inputfile = filename + '.tif'
 
-    outputname = '/home/nnors/Vektor/' + filename + '.gpkg'
+    outputname = f'{outputpathfile}/{filename}.gpkg'
 
     p = Path(__file__).with_name('config-vector_proto.yaml')
     file_yaml_input = p.absolute()
