@@ -41,6 +41,7 @@ MANIFEST
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+wget-log
 
 # Unit test / coverage reports
 htmlcov/
@@ -135,3 +136,7 @@ dmypy.json
 
 
 configs_vector/
+
+# model data
+
+.ckpt
