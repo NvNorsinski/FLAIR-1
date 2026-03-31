@@ -138,5 +138,4 @@ dmypy.json
 configs_vector/
 
 # model data
-
-.ckpt
+*.ckpt
