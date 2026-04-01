@@ -1,5 +1,5 @@
 # TODO
-# yaml file updates, input , output paths
+# yaml file updates, input , output paths, S3 Bucket benutzen
 import os
 import glob
 from pathlib import Path
