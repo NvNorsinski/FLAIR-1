@@ -11,3 +11,7 @@ After converting the raster into polygons, boundaries often follow a “stair-st
 
 3 — How they work together
 Think of sieve_pixels as deciding which small blobs disappear entirely, while simplify_tolerance decides how wiggly the edges of the remaining blobs are. A typical workflow is to first sieve out speckle-noise patches (e.g. under 1 m²), then apply a modest simplification (e.g. 0.5 m) to make the surviving polygons cleaner and the GeoPackage smaller without losing important detail.
+
+
+start vectorise_tiles.py to start vectorisation
+ 

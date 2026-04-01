@@ -1,3 +1,5 @@
+# TODO
+
 import os
 import glob
 from pathlib import Path
@@ -76,7 +78,7 @@ for input in list_input:
     yamlfile_path = f'{yamlfile_output_path}{yamlfile_name}.yaml'
     
     # # # Leerzeichen ist wichtig
-    osCommand="/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/src/flair_aiml4os_vector_conv/flair_vectorise.sh " + yamlfile_path
+    osCommand="/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/src/flair/flair_detect.sh " + yamlfile_path
     print(osCommand)
 
     if os.system(osCommand)!=0:
