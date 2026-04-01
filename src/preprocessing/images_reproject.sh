@@ -4,26 +4,32 @@ set -euo pipefail
 # Reproject all GeoTIFFs in a folder to EPSG:31255 using gdalwarp.
 # - Skips files already in EPSG:31255 (copies with compression options).
 # - Writes outputs to  (or custom OUTPUT_DIR).
-# - Applies LZW compression and tiling to output GeoTIFFs.
+# 
 #
 # Usage:
 #  ./images_reproject.sh s3://input-bucket/input-prefix/ s3://output-bucket/output-prefix/
 #
 # Requirements:
 #   - AWS CLI installed and configured (for listing S3 files)
-# pip install awscli
+#     pip install awscli
+#     sudo apt install awscli
+#
 #   - GDAL installed and available in PATH (gdalwarp, gdalinfo, gdal_translate)
 #   - /tmp has enough space for temporary files
 
-INPUT_S3="${1:?Usage: $0 s3://input-bucket/input-prefix/ s3://output-bucket/output-prefix/}"
-OUTPUT_S3="${2:?Usage: $0 s3://input-bucket/input-prefix/ s3://output-bucket/output-prefix/}"
+#input = "s3://AT_results/AT/AT/2024/output_masked/"
+#output  "s3://AT_results/AT/AT/2024/output_reproject/"
+
+#./images_reproject.sh s3://AT_results/AT/AT/2024/output_masked/ s3://AT_results/AT/AT/2024/output_reproject/
+
+INPUT_S3="${1:?Fehler: $0 s3://input-bucket/input-prefix/ s3://output-bucket/output-prefix/}"
+OUTPUT_S3="${2:?Fehler: $0 s3://input-bucket/input-prefix/ s3://output-bucket/output-prefix/}"
 TARGET_EPSG="EPSG:3857"
 
-TMPDIR="${TMPDIR:-/tmp}"
+TMPDIR="${TMPDIR:-/home/eouser/tmp}"
 
 
-mapfile -t files < <(aws s3 ls "$INPUT_S3" --recursive | awk '{print $4}' | grep -Ei '\.tif(f)?$' | sort)
-
+mapfile -t files < <(s3cmd --config=/home/eouser/storage-access ls "$INPUT_S3" | awk '{print $4}' | grep -Ei '\.tif(f)?$' | sed "s|^$INPUT_S3||" | sed 's|^/||' | sort)
 
 if [[ ${#files[@]} -eq 0 ]]; then
   echo "No GeoTIFF files found in '$INPUT_S3'."
@@ -61,8 +67,10 @@ for s3_key in "${files[@]}"; do
 
   echo "----------------------------------------"
   echo "Processing: $s3_key"
+  echo "Processing: $s3_in_path"
+  echo "Processing: $local_in"
  # Download from S3
-  aws s3 cp "$s3_in_path" "$local_in"
+  s3cmd --config=/home/eouser/storage-access get "$s3_in_path" "$local_in"
 
   # Check current EPSG
   src_epsg="$(extract_epsg "$local_in")"
@@ -73,11 +81,11 @@ for s3_key in "${files[@]}"; do
   fi
 
   if [[ "$src_epsg" == "3857" ]]; then
-    echo "  Already in $TARGET_EPSG. Copying with compression options..."
+    echo "Already in $TARGET_EPSG. Copying with compression options..."
     gdal_translate \
       -co COMPRESS=ZSTD -co TILED=YES -ot Int8 -co BIGTIFF=IF_SAFER \
       "$local_in" "$local_out"
-    aws s3 cp "$local_out" "$s3_out_path"
+    s3cmd --config=/home/eouser/storage-access put "$local_out" "$s3_out_path"
     echo "  -> Uploaded: $s3_out_path"
     rm -f "$local_in" "$local_out"
     continue
@@ -91,11 +99,11 @@ for s3_key in "${files[@]}"; do
     -srcnodata nan -dstnodata -128 \
     -multi -wo NUM_THREADS=ALL_CPUS \
     -overwrite \
-    -ot Int8 \
+    -ot Int16 \
     -co COMPRESS=ZSTD -co TILED=YES -co BIGTIFF=IF_SAFER \
     "$local_in" "$local_out"
 
-  aws s3 cp "$local_out" "$s3_out_path"
+  s3cmd --config=/home/eouser/storage-access put "$local_out" "$s3_out_path"
   echo "  -> Uploaded: $s3_out_path"
   rm -f "$local_in" "$local_out"
 done
