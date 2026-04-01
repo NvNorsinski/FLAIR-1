@@ -1,5 +1,5 @@
 # TODO
-
+# yaml file updates, input , output paths
 import os
 import glob
 from pathlib import Path
@@ -43,7 +43,7 @@ def update_yaml(input_filepath):
 
     p = Path(__file__).with_name('config-vector_proto.yaml')
     #file_yaml_input = p.absolute()
-    file_yaml_input = '/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/src/flair_aiml4os_vector_conv/config_vector_proto.yaml'
+    file_yaml_input = '/home/eouser/FLAIR-1/configs/flair-1-config-detect.yaml'
 
    
     update_yaml_text(key = "input_file", new_value = f'{input_filepath}.tif', 
@@ -72,13 +72,13 @@ for input in list_input:
     print(input_filepath)
 
 
-    #update_yaml(input_filepath)
+    update_yaml(input_filepath)
 
 
     yamlfile_path = f'{yamlfile_output_path}{yamlfile_name}.yaml'
     
     # # # Leerzeichen ist wichtig
-    osCommand="/home/nnors/Documents/Essnet/FLAIR_1_fork/FLAIR-1/src/flair/flair_detect.sh " + yamlfile_path
+    osCommand="/home/eouser/FLAIR-1/src/flair/flair_detect.sh " + yamlfile_path
     print(osCommand)
 
     if os.system(osCommand)!=0:
