@@ -39,13 +39,13 @@ def update_yaml(input_filepath):
     
     inputfile_raster = f'{dir_input}{filename}.tif'
 
-    outputname_geopackage = f'{outputpath}/{filename}.gpkg'
+
 
     p = Path(__file__).with_name('config-vector_proto.yaml')
     #file_yaml_input = p.absolute()
     file_yaml_input = '/home/eouser/FLAIR-1/configs/flair-1-config-detect.yaml'
 
-   
+    # TODO
     update_yaml_text(key = "input_file", new_value = f'{input_filepath}.tif', 
                      file_yaml_input = file_yaml_input, file_yaml_output = yamlfile)
     
