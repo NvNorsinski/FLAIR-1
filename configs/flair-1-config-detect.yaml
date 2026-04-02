@@ -1,5 +1,5 @@
-output_path: "/result/results/"
-output_name: "2024460_Mosaik_RGB.tif"
+output_path:
+output_name:
 
 
 input_img_path: "/data/orthofotos/2024460_Mosaik_RGB.tif"
