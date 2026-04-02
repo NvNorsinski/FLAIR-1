@@ -15,7 +15,7 @@ set -euo pipefail
 #     sudo apt install awscli
 #
 #   - GDAL installed and available in PATH (gdalwarp, gdalinfo, gdal_translate)
-#   - /tmp has enough space for temporary files
+#  
 
 #input = "s3://AT_results/AT/AT/2024/output_masked/"
 #output  "s3://AT_results/AT/AT/2024/output_reproject/"
