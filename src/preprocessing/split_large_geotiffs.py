@@ -1,5 +1,5 @@
 
-# TODO adapt to cloud and test
+# TODO test it
 from osgeo import gdal, osr
 
 import os
@@ -8,8 +8,6 @@ import glob
 from pathlib import Path
 
 import boto3
-
-
 
 #-----------------------------------------------------------------------
 with open('/home/eouser/ec2credentials') as f:
@@ -62,11 +60,8 @@ def list_tif_files(directory):
     """List full paths of all files in the given directory ending with '.tif'."""
     return [os.path.join(directory, f) for f in os.listdir(directory) if f.lower().endswith('.tif')]
 
-#list_files = list_tif_files('/mnt/eo/projekt/2023_Essnet/results/Raster_reproject_3/')
 
 list_files = list_s3_files_in_folder_using_client(bucket_name=BUCKET, prefix=BUCKET_PREFIX)
-
-#output_dir = '/mnt/eo/projekt/2023_Essnet/results/Raster_tiled'
 
 
 nr_subdivisions = 20

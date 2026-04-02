@@ -1,11 +1,50 @@
+#TODO Test it
+
 import os
 import glob
 from pathlib import Path
 
-# Pfad zum Hauptverzeichnis
-dir_input = "/mnt/eo/projekt/2023_Essnet/results/Raster_tiled/"
-outputpath = '/home/nnors/Vektor/'
-yamlfile_output_path = '/mnt/eo/projekt/2023_Essnet/results/yamlfiles/'
+import boto3
+
+
+
+#-----------------------------------------------------------------------
+with open('/home/eouser/ec2credentials') as f:
+    content = f.read()
+list_content = content.split(sep = ':')
+
+access_key = list_content[0]
+secret_key = list_content[1]
+
+
+endpoint_url = "s3.waw3-2.cloudferro.com"
+endpoint_url_https = "https://s3.waw3-2.cloudferro.com"
+region_name = "US"
+
+try:
+    s3 = boto3.client(
+        "s3",
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key,
+        endpoint_url=endpoint_url_https,
+        region_name=region_name,
+    )
+
+    print(s3.list_buckets()["Buckets"])
+
+except Exception as issue:
+    print("The following error occurred:")
+    print(issue)
+
+#---------------------------------------------------------------------
+# Path to reprojected images
+OUT_BUCKET = "AT_results"
+OUT_PREFIX_RASTER = "AT/AT/2024/output_masked/"
+
+OUT_PREFIX_VECTOR = "AT/AT/2024/output_vectorised/"
+
+yamlfile_output_path = '/home/eouser/yamlfiles_vectorise'
+
 
 def update_yaml(input_filepath):
     def update_yaml_text(key, new_value, file_yaml_input, file_yaml_output):
