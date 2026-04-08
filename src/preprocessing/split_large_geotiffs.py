@@ -37,6 +37,17 @@ except Exception as issue:
     print("The following error occurred:")
     print(issue)
 
+
+os.environ["AWS_ACCESS_KEY_ID"] = access_key
+os.environ["AWS_SECRET_ACCESS_KEY"] = secret_key
+os.environ["AWS_REGION"] = region_name
+os.environ["AWS_S3_ENDPOINT"] = endpoint_url
+os.environ["GDAL_S3_ENDPOINT"] = endpoint_url
+os.environ["AWS_S3_USE_HTTPS"] = "YES"
+os.environ["AWS_S3_ADDRESSING_STYLE"] = "path" 
+os.environ["GDAL_DISABLE_READDIR_ON_OPEN"] = "EMPTY_DIR"
+os.environ["CPL_VSIL_USE_TEMP_FILE_FOR_RANDOM_WRITE"] = "YES"
+
 #---------------------------------------------------------------------
 
 BUCKET = "AT_results"
