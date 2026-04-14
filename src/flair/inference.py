@@ -1,5 +1,5 @@
 # TODO
-# test it
+# test it rewritten to use S3 buckets insted of mounted volume
 import os
 import glob
 from pathlib import Path
